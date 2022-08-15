@@ -1,0 +1,83 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: FastLaneAuction
+    network: matic
+    source:
+      address: "0xF63FE6597c2F10f154BbF8525d417Bd294b1cA03"
+      abi: FastLaneAuction
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - AuctionEnded
+        - AuctionStarted
+        - AuctionStarterSet
+        - AutopayBatchSizeSet
+        - BidAdded
+        - BidTokenSet
+        - FastLaneFeeSet
+        - MinimumAutoshipThresholdSet
+        - MinimumBidIncrementSet
+        - OpportunityAddressDisabled
+        - OpportunityAddressEnabled
+        - OpsSet
+        - OwnershipTransferred
+        - PausedStateSet
+        - ResolverMaxGasPriceSet
+        - ValidatorAddressDisabled
+        - ValidatorAddressEnabled
+        - ValidatorPreferencesSet
+        - ValidatorWithdrawnBalance
+        - WithdrawStuckERC20
+        - WithdrawStuckNativeToken
+      abis:
+        - name: FastLaneAuction
+          file: ./abis/FastLaneAuction.json
+      eventHandlers:
+        - event: AuctionEnded(indexed uint128)
+          handler: handleAuctionEnded
+        - event: AuctionStarted(indexed uint128)
+          handler: handleAuctionStarted
+        - event: AuctionStarterSet(indexed address)
+          handler: handleAuctionStarterSet
+        - event: AutopayBatchSizeSet(uint16)
+          handler: handleAutopayBatchSizeSet
+        - event: BidAdded(address,indexed address,indexed address,uint256,indexed uint256)
+          handler: handleBidAdded
+        - event: BidTokenSet(indexed address)
+          handler: handleBidTokenSet
+        - event: FastLaneFeeSet(uint256)
+          handler: handleFastLaneFeeSet
+        - event: MinimumAutoshipThresholdSet(uint128)
+          handler: handleMinimumAutoshipThresholdSet
+        - event: MinimumBidIncrementSet(uint256)
+          handler: handleMinimumBidIncrementSet
+        - event: OpportunityAddressDisabled(indexed address,indexed uint128)
+          handler: handleOpportunityAddressDisabled
+        - event: OpportunityAddressEnabled(indexed address,indexed uint128)
+          handler: handleOpportunityAddressEnabled
+        - event: OpsSet(address)
+          handler: handleOpsSet
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: PausedStateSet(bool)
+          handler: handlePausedStateSet
+        - event: ResolverMaxGasPriceSet(uint128)
+          handler: handleResolverMaxGasPriceSet
+        - event: ValidatorAddressDisabled(indexed address,indexed uint128)
+          handler: handleValidatorAddressDisabled
+        - event: ValidatorAddressEnabled(indexed address,indexed uint128)
+          handler: handleValidatorAddressEnabled
+        - event: ValidatorPreferencesSet(indexed address,uint256,address)
+          handler: handleValidatorPreferencesSet
+        - event: ValidatorWithdrawnBalance(indexed address,indexed uint128,uint256,address,indexed address)
+          handler: handleValidatorWithdrawnBalance
+        - event: WithdrawStuckERC20(indexed address,indexed address,uint256)
+          handler: handleWithdrawStuckERC20
+        - event: WithdrawStuckNativeToken(indexed address,uint256)
+          handler: handleWithdrawStuckNativeToken
+      file: ./src/fast-lane-auction.ts
