@@ -1,5 +1,95 @@
-type ExampleEntity @entity {
+type GlobalStats @entity {
   id: ID!
-  count: BigInt!
-  auction_number: BigInt! # uint128
+  totalBidsCount: BigInt!
+  totalBidsSum: BigInt!
+  totalValidatorsPaid: BigInt!
+  totalValidatorsCount: BigInt!
+  totalOpportunitiesCount: BigInt!
+}
+
+type Auction @entity {
+  id: ID!
+  rounds: [Round!] @derivedFrom(field: "auction")
+  address: Bytes!
+  minimumIncrement: BigInt!
+  fee: BigInt!
+  bidToken: Bytes!
+  paused: Boolean!
+  ops: Bytes!
+  resolverMaxGasPrice: BigInt!
+  autoPayBatchSize: BigInt!
+}
+
+type Round @entity {
+  id: ID!
+  auction: Auction
+  startBlock: BigInt!
+  endBlock: BigInt
+  addedValidators: [Validator!]
+  addedOpportunities: [Opportunity!]
+  bids: [Bid!] @derivedFrom(field: "round")
+}
+
+type Validator @entity {
+  id: ID!
+  amountPaid: BigInt!
+  amountPending: BigInt!
+  bidsReceived: BigInt!
+  totalRedeemed: BigInt!
+  pendingBalanceAtlastBid: BigInt!
+  lastWithdrawnAuction: BigInt!
+  lastBidReceivedAuction: BigInt!
+  lastBidReceivedTimestamp: BigInt!
+  outstandingBalance: BigInt!
+  minAutoshipAmount: BigInt!
+  validatorPayableAddress: Bytes!
+  status: Status!
+}
+
+type Pair @entity {
+  id: ID!
+  validator: Validator
+  opportunity: Opportunity
+  topBid: Bid
+}
+
+type Bid @entity {
+  id: ID!
+  round: Round
+  validator: Validator!
+  opportunity: Opportunity!
+  searcher: Searcher!
+  searcherContract: SearcherContract!
+  bidAmount: BigInt!
+  timestamp: BigInt!
+  pair: Pair
+  block: BigInt!
+}
+
+type SearcherContract @entity {
+  id: ID!
+  address: Bytes!
+}
+
+type Searcher @entity {
+  id: ID!
+  address: Bytes!
+  bidsAdded: BigInt!
+  contracts: [SearcherContract!]
+  roundsWonCount: BigInt!
+  roundsParticipated: BigInt!
+  lastRoundParticipated: BigInt!
+  lastRoundWon: BigInt!
+}
+
+type Opportunity @entity {
+  id: ID!
+  bidsReceived: BigInt!
+  status: Status!
+}
+
+type Status @entity {
+  id: ID!
+  activeAtAuction: BigInt!
+  inactiveAtAuction: BigInt!
 }

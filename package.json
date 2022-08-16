@@ -1,13 +1,18 @@
 {
-  "name": "pfl-auction-subgraph-demo",
+  "name": "fastlane-polygon",
   "license": "UNLICENSED",
   "scripts": {
+    "reinstall": "rm -rf node_modules/ && yarn",
+    "clean": "rm -rf build/ generated/",
     "codegen": "graph codegen",
+    "pub:beta": "yarn publish --tag beta --access public",
+    "pub:latest": "yarn publish --tag latest --access public",
+    "vbump": "version update -p",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ pfl-auction-subgraph-demo",
-    "create-local": "graph create --node http://localhost:8020/ pfl-auction-subgraph-demo",
-    "remove-local": "graph remove --node http://localhost:8020/ pfl-auction-subgraph-demo",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pfl-auction-subgraph-demo",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ elyx0/fastlane-polygon",
+    "create-local": "graph create --node http://localhost:8020/ elyx0/fastlane-polygon",
+    "remove-local": "graph remove --node http://localhost:8020/ elyx0/fastlane-polygon",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 elyx0/fastlane-polygon",
     "test": "graph test"
   },
   "dependencies": {

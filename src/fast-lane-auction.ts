@@ -23,7 +23,11 @@ import {
   WithdrawStuckERC20,
   WithdrawStuckNativeToken
 } from "../generated/FastLaneAuction/FastLaneAuction"
-import { ExampleEntity } from "../generated/schema"
+import { Validator } from "../generated/schema"
+
+export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): void {
+  let entity = Validator.load(event.)
+}
 
 export function handleAuctionEnded(event: AuctionEnded): void {
   // Entities can be loaded from the store using a string ID; this ID
