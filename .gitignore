@@ -16,3 +16,4 @@ subgraph.polygon.yaml
 .DS_Store
 .versionFilesList.json
 subgraph.mumbai.yaml
+tests/.bin

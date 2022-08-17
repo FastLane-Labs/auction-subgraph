@@ -24,10 +24,14 @@ type Round @entity {
   id: ID!
   auction: Auction
   startBlock: BigInt!
+  startTimestamp: Int!
+  endTimestamp: Int
   endBlock: BigInt
   addedValidators: [Validator!]
   addedOpportunities: [Opportunity!]
   bids: [Bid!] @derivedFrom(field: "round")
+  createdAt: Int!
+  updatedAt: Int!
 }
 
 type Validator @entity {
@@ -44,6 +48,8 @@ type Validator @entity {
   minAutoshipAmount: BigInt!
   validatorPayableAddress: Bytes!
   status: Status!
+  createdAt: Int!
+  updatedAt: Int!
 }
 
 type Pair @entity {
@@ -61,7 +67,7 @@ type Bid @entity {
   searcher: Searcher!
   searcherContract: SearcherContract!
   bidAmount: BigInt!
-  timestamp: BigInt!
+  timestamp: Int!
   pair: Pair
   block: BigInt!
 }
@@ -80,6 +86,8 @@ type Searcher @entity {
   roundsParticipated: BigInt!
   lastRoundParticipated: BigInt!
   lastRoundWon: BigInt!
+  createdAt: Int!
+  updatedAt: Int!
 }
 
 type Opportunity @entity {
@@ -90,6 +98,7 @@ type Opportunity @entity {
 
 type Status @entity {
   id: ID!
+  address: Bytes!
   activeAtAuction: BigInt!
   inactiveAtAuction: BigInt!
 }

@@ -1,4 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts"
+import { logStore } from 'matchstick-as/assembly/store'
+
 import {
   FastLaneAuction,
   AuctionEnded,
@@ -23,34 +25,56 @@ import {
   WithdrawStuckERC20,
   WithdrawStuckNativeToken
 } from "../generated/FastLaneAuction/FastLaneAuction"
-import { Validator } from "../generated/schema"
+
+import { loadOrCreateValidator } from './helpers/loadOrCreateValidator';
+import { loadOrCreateStatus } from './helpers/loadOrCreateStatus';
+
+import {
+  ZERO,
+  ONE,
+  NEG_ONE,
+  MAX_AUCTION_VALUE,
+  ADDRESS_ZERO,
+  ZERO_INT
+} from './helpers/common';
 
 export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): void {
-  let entity = Validator.load(event.)
+  const validator = loadOrCreateValidator(event.params.validator);
+  const status = loadOrCreateStatus(event.params.validator);
+  // let contract = FastLaneAuction.bind(event.address)
+  status.activeAtAuction = event.params.auction_number;
+  status.inactiveAtAuction = MAX_AUCTION_VALUE;
+  if (validator.createdAt == ZERO_INT) {
+    validator.createdAt = event.block.timestamp.toI32();
+    validator.save();
+  }
+  validator.updatedAt = event.block.timestamp.toI32();
+  validator.save();
+  status.save();
 }
 
 export function handleAuctionEnded(event: AuctionEnded): void {
   // Entities can be loaded from the store using a string ID; this ID
   // needs to be unique across all entities of the same type
-  let entity = ExampleEntity.load(event.transaction.from.toHex())
+  // let entity = ExampleEntity.load(event.transaction.from.toHex())
 
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (!entity) {
-    entity = new ExampleEntity(event.transaction.from.toHex())
+  // // Entities only exist after they have been saved to the store;
+  // // `null` checks allow to create entities on demand
+  // if (!entity) {
+  //   entity = new ExampleEntity(event.transaction.from.toHex())
 
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
-  }
+  //   // Entity fields can be set using simple assignments
+  //   entity.count = BigInt.fromI32(0)
+  // }
 
-  // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
+  // // BigInt and BigDecimal math are supported
+  // entity.count = entity.count + BigInt.fromI32(1)
 
-  // Entity fields can be set based on event parameters
-  entity.auction_number = event.params.auction_number
+  // // Entity fields can be set based on event parameters
+  // entity.auction_number = event.params.auction_number
 
-  // Entities can be written to the store with `.save()`
-  entity.save()
+  // // Entities can be written to the store with `.save()`
+  // entity.save()
 
   // Note: If a handler doesn't require existing field values, it is faster
   // _not_ to load the entity from the store. Instead, create it fresh with
@@ -135,9 +159,9 @@ export function handleValidatorAddressDisabled(
   event: ValidatorAddressDisabled
 ): void {}
 
-export function handleValidatorAddressEnabled(
-  event: ValidatorAddressEnabled
-): void {}
+// export function handleValidatorAddressEnabled(
+//   event: ValidatorAddressEnabled
+// ): void {}
 
 export function handleValidatorPreferencesSet(
   event: ValidatorPreferencesSet

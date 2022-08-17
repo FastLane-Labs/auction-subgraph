@@ -154,6 +154,15 @@ export class Auction extends Entity {
     this.set("minimumIncrement", Value.fromBigInt(value));
   }
 
+  get fee(): BigInt {
+    let value = this.get("fee");
+    return value!.toBigInt();
+  }
+
+  set fee(value: BigInt) {
+    this.set("fee", Value.fromBigInt(value));
+  }
+
   get bidToken(): Bytes {
     let value = this.get("bidToken");
     return value!.toBytes();
@@ -257,6 +266,24 @@ export class Round extends Entity {
     this.set("startBlock", Value.fromBigInt(value));
   }
 
+  get startTimestamp(): i32 {
+    let value = this.get("startTimestamp");
+    return value!.toI32();
+  }
+
+  set startTimestamp(value: i32) {
+    this.set("startTimestamp", Value.fromI32(value));
+  }
+
+  get endTimestamp(): i32 {
+    let value = this.get("endTimestamp");
+    return value!.toI32();
+  }
+
+  set endTimestamp(value: i32) {
+    this.set("endTimestamp", Value.fromI32(value));
+  }
+
   get endBlock(): BigInt | null {
     let value = this.get("endBlock");
     if (!value || value.kind == ValueKind.NULL) {
@@ -327,6 +354,24 @@ export class Round extends Entity {
       this.set("bids", Value.fromStringArray(<Array<string>>value));
     }
   }
+
+  get createdAt(): i32 {
+    let value = this.get("createdAt");
+    return value!.toI32();
+  }
+
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
+  }
+
+  get updatedAt(): i32 {
+    let value = this.get("updatedAt");
+    return value!.toI32();
+  }
+
+  set updatedAt(value: i32) {
+    this.set("updatedAt", Value.fromI32(value));
+  }
 }
 
 export class Validator extends Entity {
@@ -385,6 +430,15 @@ export class Validator extends Entity {
 
   set bidsReceived(value: BigInt) {
     this.set("bidsReceived", Value.fromBigInt(value));
+  }
+
+  get totalRedeemed(): BigInt {
+    let value = this.get("totalRedeemed");
+    return value!.toBigInt();
+  }
+
+  set totalRedeemed(value: BigInt) {
+    this.set("totalRedeemed", Value.fromBigInt(value));
   }
 
   get pendingBalanceAtlastBid(): BigInt {
@@ -457,6 +511,24 @@ export class Validator extends Entity {
 
   set status(value: string) {
     this.set("status", Value.fromString(value));
+  }
+
+  get createdAt(): i32 {
+    let value = this.get("createdAt");
+    return value!.toI32();
+  }
+
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
+  }
+
+  get updatedAt(): i32 {
+    let value = this.get("updatedAt");
+    return value!.toI32();
+  }
+
+  set updatedAt(value: i32) {
+    this.set("updatedAt", Value.fromI32(value));
   }
 }
 
@@ -636,13 +708,13 @@ export class Bid extends Entity {
     this.set("bidAmount", Value.fromBigInt(value));
   }
 
-  get timestamp(): BigInt {
+  get timestamp(): i32 {
     let value = this.get("timestamp");
-    return value!.toBigInt();
+    return value!.toI32();
   }
 
-  set timestamp(value: BigInt) {
-    this.set("timestamp", Value.fromBigInt(value));
+  set timestamp(value: i32) {
+    this.set("timestamp", Value.fromI32(value));
   }
 
   get pair(): string | null {
@@ -660,6 +732,15 @@ export class Bid extends Entity {
     } else {
       this.set("pair", Value.fromString(<string>value));
     }
+  }
+
+  get block(): BigInt {
+    let value = this.get("block");
+    return value!.toBigInt();
+  }
+
+  set block(value: BigInt) {
+    this.set("block", Value.fromBigInt(value));
   }
 }
 
@@ -807,6 +888,24 @@ export class Searcher extends Entity {
   set lastRoundWon(value: BigInt) {
     this.set("lastRoundWon", Value.fromBigInt(value));
   }
+
+  get createdAt(): i32 {
+    let value = this.get("createdAt");
+    return value!.toI32();
+  }
+
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
+  }
+
+  get updatedAt(): i32 {
+    let value = this.get("updatedAt");
+    return value!.toI32();
+  }
+
+  set updatedAt(value: i32) {
+    this.set("updatedAt", Value.fromI32(value));
+  }
 }
 
 export class Opportunity extends Entity {
@@ -888,6 +987,15 @@ export class Status extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get address(): Bytes {
+    let value = this.get("address");
+    return value!.toBytes();
+  }
+
+  set address(value: Bytes) {
+    this.set("address", Value.fromBytes(value));
   }
 
   get activeAtAuction(): BigInt {
