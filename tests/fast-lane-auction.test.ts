@@ -4,13 +4,14 @@ import {
   test,
   clearStore,
   beforeAll,
-  afterAll
+  afterAll,
+  logStore
 } from "matchstick-as/assembly/index"
 import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts"
 import { Opportunity, Validator } from "../generated/schema"
 import { AuctionEnded, AuctionStarted } from "../generated/FastLaneAuction/FastLaneAuction"
 import { handleAuctionEnded, handleAuctionStarted, handleOpportunityAddressEnabled, handleValidatorAddressEnabled } from "../src/fast-lane-auction"
-import { createAuctionEndedEvent, createOpportunityAddressEnabledEvent, createValidatorAddressEnabledEvent } from "./fast-lane-auction-utils"
+import { createOpportunityAddressEnabledEvent, createValidatorAddressEnabledEvent, createAuctionStartedEvent, createAuctionEndedEvent } from "./fast-lane-auction-utils"
 
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
@@ -47,7 +48,7 @@ describe("Opportunities and Validators Enable Disable", () => {
     // Store will be lowercase
     let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),BigInt.zero());
     handleOpportunityAddressEnabled(newEnableOpportunityEvent);
-    assert.entityCount("Validator", 1);
+    assert.entityCount("Opportunity", 1);
     assert.entityCount("Status", 1);
     assert.fieldEquals(
       "Opportunity",
@@ -60,6 +61,30 @@ describe("Opportunities and Validators Enable Disable", () => {
       "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff".toLowerCase(),
       "status",
       "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff".toLowerCase()
+    );
+  });
+
+
+  describe("New Round",() => {
+    // Store will be lowercase
+    let newAuctionStartedEvent = createAuctionStartedEvent(BigInt.fromI32(1));
+    handleAuctionStarted(newAuctionStartedEvent);
+    let newAuctionEndedEvent = createAuctionEndedEvent(BigInt.fromI32(1));
+    handleAuctionEnded(newAuctionEndedEvent);
+    logStore();
+    assert.entityCount("Auction", 1);
+    assert.entityCount("Round", 1);
+    assert.fieldEquals(
+      "Round",
+      "1",
+      "startBlock",
+      "1"
+    );
+    assert.fieldEquals(
+      "Round",
+      "1",
+      "endBlock",
+      "1"
     );
   });
 

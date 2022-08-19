@@ -77,6 +77,7 @@ export function handleAuctionStarted(event: AuctionStarted): void {
 
     if (round.createdAt == ZERO_INT) {
       round.startBlock = event.block.number;
+      round.startTimestamp = event.block.timestamp.toI32();
       round.createdAt = event.block.timestamp.toI32();
       round.save();
     }
