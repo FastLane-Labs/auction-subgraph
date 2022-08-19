@@ -11,6 +11,10 @@ export const NEG_ONE = BigInt.fromI32(-1);
 
 export const MAX_AUCTION_VALUE = BigInt.fromString("340282366920938463463374607431768211455");
 
+export const AUCTION_ID = 'MainAuction';
+export const STATS_ID = 'MainStats';
+
+
 export function getStringValue(obj: TypedMap<string, JSONValue>, key: string): string {
     if (obj.isSet(key)) {
       const val = obj.get(key);

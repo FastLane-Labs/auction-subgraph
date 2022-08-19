@@ -17,7 +17,9 @@ type Auction @entity {
   paused: Boolean!
   ops: Bytes!
   resolverMaxGasPrice: BigInt!
-  autoPayBatchSize: BigInt!
+  autoPayBatchSize: Int!
+  minimumAutoship: BigInt!
+  # Consider updatedAt
 }
 
 type Round @entity {
@@ -34,7 +36,14 @@ type Round @entity {
   updatedAt: Int!
 }
 
-type Validator @entity {
+# type Updatable @entity {
+#   id: ID!
+#   createdAt: Int!
+#   updatedAt: Int!
+# }
+
+# type Validator implements Updatable @entity  { <- 
+type Validator @entity  {
   id: ID!
   amountPaid: BigInt!
   amountPending: BigInt!
@@ -94,6 +103,8 @@ type Opportunity @entity {
   id: ID!
   bidsReceived: BigInt!
   status: Status!
+  createdAt: Int!
+  updatedAt: Int!
 }
 
 type Status @entity {

@@ -37,6 +37,9 @@ import {
   ADDRESS_ZERO,
   ZERO_INT
 } from './helpers/common';
+import { loadOrCreateOpportunity } from "./helpers/loadOrCreateOpportunity";
+import { loadOrCreateAuction } from "./helpers/loadOrCreateAuction";
+import { loadOrCreateRound } from "./helpers/loadOrCreateRound";
 
 export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): void {
   const validator = loadOrCreateValidator(event.params.validator);
@@ -54,102 +57,117 @@ export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): v
 }
 
 export function handleAuctionEnded(event: AuctionEnded): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  // let entity = ExampleEntity.load(event.transaction.from.toHex())
-
-  // // Entities only exist after they have been saved to the store;
-  // // `null` checks allow to create entities on demand
-  // if (!entity) {
-  //   entity = new ExampleEntity(event.transaction.from.toHex())
-
-  //   // Entity fields can be set using simple assignments
-  //   entity.count = BigInt.fromI32(0)
-  // }
-
-  // // BigInt and BigDecimal math are supported
-  // entity.count = entity.count + BigInt.fromI32(1)
-
-  // // Entity fields can be set based on event parameters
-  // entity.auction_number = event.params.auction_number
-
-  // // Entities can be written to the store with `.save()`
-  // entity.save()
-
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
-
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.MAX_AUCTION_VALUE(...)
-  // - contract.auctionStarter(...)
-  // - contract.auction_live(...)
-  // - contract.auction_number(...)
-  // - contract.autopay_batch_size(...)
-  // - contract.bid_increment(...)
-  // - contract.bid_token(...)
-  // - contract.checker(...)
-  // - contract.endAuction(...)
-  // - contract.fast_lane_fee(...)
-  // - contract.findFinalizedAuctionWinnerAtAuction(...)
-  // - contract.findLastFinalizedAuctionWinner(...)
-  // - contract.findLiveAuctionTopBid(...)
-  // - contract.getActivePrivilegesAuctionNumber(...)
-  // - contract.getAutopayJobs(...)
-  // - contract.getCheckpoint(...)
-  // - contract.getPreferences(...)
-  // - contract.getStatus(...)
-  // - contract.getValidatorsActiveAtAuction(...)
-  // - contract.max_gas_price(...)
-  // - contract.minAutoShipThreshold(...)
-  // - contract.ops(...)
-  // - contract.outstandingFLBalance(...)
-  // - contract.owner(...)
+  const round = loadOrCreateRound(event.params.auction_number);
+  round.endTimestamp = event.block.timestamp.toI32();
+  round.endBlock = event.block.number;
+  round.updatedAt = event.block.timestamp.toI32();
+  round.save();
 }
 
-export function handleAuctionStarted(event: AuctionStarted): void {}
+export function handleAuctionStarted(event: AuctionStarted): void {
+    const auction = loadOrCreateAuction();
 
-export function handleAuctionStarterSet(event: AuctionStarterSet): void {}
+    if (auction.address == ADDRESS_ZERO) {
+      auction.address = event.address;
+      auction.save();
+    }
+    
+    const round = loadOrCreateRound(event.params.auction_number);
+    round.auction = auction.id;
 
-export function handleAutopayBatchSizeSet(event: AutopayBatchSizeSet): void {}
+    if (round.createdAt == ZERO_INT) {
+      round.startBlock = event.block.number;
+      round.createdAt = event.block.timestamp.toI32();
+      round.save();
+    }
+    round.updatedAt = event.block.timestamp.toI32();
+    round.save();
+}
+
+export function handleAuctionStarterSet(event: AuctionStarterSet): void {
+  // Starter Role
+}
+
+export function handleAutopayBatchSizeSet(event: AutopayBatchSizeSet): void {
+  const auction = loadOrCreateAuction();
+  auction.autoPayBatchSize = event.params.batch_size;
+  auction.save();
+}
 
 export function handleBidAdded(event: BidAdded): void {}
 
-export function handleBidTokenSet(event: BidTokenSet): void {}
+export function handleBidTokenSet(event: BidTokenSet): void {
+  const auction = loadOrCreateAuction();
+  auction.bidToken = event.params.token;
+  auction.save();
+}
 
-export function handleFastLaneFeeSet(event: FastLaneFeeSet): void {}
+export function handleFastLaneFeeSet(event: FastLaneFeeSet): void {
+  const auction = loadOrCreateAuction();
+  auction.fee = event.params.amount;
+  auction.save();
+}
 
 export function handleMinimumAutoshipThresholdSet(
   event: MinimumAutoshipThresholdSet
-): void {}
+): void {
+  const auction = loadOrCreateAuction();
+  auction.minimumAutoship = event.params.amount;
+  auction.save();
+}
 
 export function handleMinimumBidIncrementSet(
   event: MinimumBidIncrementSet
-): void {}
+): void {
+  const auction = loadOrCreateAuction();
+  auction.minimumIncrement = event.params.amount;
+  auction.save();
+}
 
 export function handleOpportunityAddressDisabled(
   event: OpportunityAddressDisabled
-): void {}
+): void {
+
+  const opportunity = loadOrCreateOpportunity(event.params.opportunity);
+  const status = loadOrCreateStatus(event.params.opportunity);
+  status.inactiveAtAuction = event.params.auction_number;
+  opportunity.updatedAt = event.block.timestamp.toI32();
+  opportunity.save();
+  status.save();
+
+}
 
 export function handleOpportunityAddressEnabled(
   event: OpportunityAddressEnabled
-): void {}
+): void {
 
-export function handleOpsSet(event: OpsSet): void {}
+  const opportunity = loadOrCreateOpportunity(event.params.opportunity);
+  const status = loadOrCreateStatus(event.params.opportunity);
+  // let contract = FastLaneAuction.bind(event.address)
+  status.activeAtAuction = event.params.auction_number;
+  status.inactiveAtAuction = event.params.auction_number;
+  if (opportunity.createdAt == ZERO_INT) {
+    opportunity.createdAt = event.block.timestamp.toI32();
+    opportunity.save();
+  }
+  opportunity.updatedAt = event.block.timestamp.toI32();
+  opportunity.save();
+  status.save();
+}
+
+export function handleOpsSet(event: OpsSet): void {
+  const auction = loadOrCreateAuction();
+  auction.ops = event.params.ops;
+  auction.save();
+}
 
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
 
-export function handlePausedStateSet(event: PausedStateSet): void {}
+export function handlePausedStateSet(event: PausedStateSet): void {
+  const auction = loadOrCreateAuction();
+  auction.paused = event.params.state;
+  auction.save();
+}
 
 export function handleResolverMaxGasPriceSet(
   event: ResolverMaxGasPriceSet
@@ -157,15 +175,26 @@ export function handleResolverMaxGasPriceSet(
 
 export function handleValidatorAddressDisabled(
   event: ValidatorAddressDisabled
-): void {}
+): void {
 
-// export function handleValidatorAddressEnabled(
-//   event: ValidatorAddressEnabled
-// ): void {}
+  const validator = loadOrCreateValidator(event.params.validator);
+  const status = loadOrCreateStatus(event.params.validator);
+  status.inactiveAtAuction = event.params.auction_number;
+  validator.updatedAt = event.block.timestamp.toI32();
+  validator.save();
+  status.save();
+
+}
+
 
 export function handleValidatorPreferencesSet(
   event: ValidatorPreferencesSet
-): void {}
+): void {
+  const validator = loadOrCreateValidator(event.params.validator);
+  validator.minAutoshipAmount = event.params.minAutoshipAmount;
+  validator.validatorPayableAddress = event.params.validatorPayableAddress;
+  validator.save();
+}
 
 export function handleValidatorWithdrawnBalance(
   event: ValidatorWithdrawnBalance

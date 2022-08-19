@@ -7,6 +7,7 @@ dataSources:
     network: matic
     source:
       address: "0xF63FE6597c2F10f154BbF8525d417Bd294b1cA03"
+      startBlock: 31729577
       abi: FastLaneAuction
     mapping:
       kind: ethereum/events

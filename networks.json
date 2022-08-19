@@ -1,7 +1,8 @@
 {
   "matic": {
     "FastLaneAuction": {
-      "address": "0xF63FE6597c2F10f154BbF8525d417Bd294b1cA03"
+      "address": "0xF63FE6597c2F10f154BbF8525d417Bd294b1cA03",
+      "startBlock": "31729577"
     }
   }
 }

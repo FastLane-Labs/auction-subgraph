@@ -43,6 +43,27 @@ describe("Opportunities and Validators Enable Disable", () => {
     );
   });
 
+  describe("Enable Opportunity",() => {
+    // Store will be lowercase
+    let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),BigInt.zero());
+    handleOpportunityAddressEnabled(newEnableOpportunityEvent);
+    assert.entityCount("Validator", 1);
+    assert.entityCount("Status", 1);
+    assert.fieldEquals(
+      "Opportunity",
+      "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff".toLowerCase(),
+      "bidsReceived",
+      "0"
+    );
+    assert.fieldEquals(
+      "Opportunity",
+      "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff".toLowerCase(),
+      "status",
+      "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff".toLowerCase()
+    );
+  });
+
+
   // describe("Enable Opp",() => {
   //   let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),BigInt.zero());
   //   handleOpportunityAddressEnabled(newEnableOpportunityEvent);

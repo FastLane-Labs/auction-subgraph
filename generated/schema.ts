@@ -199,13 +199,22 @@ export class Auction extends Entity {
     this.set("resolverMaxGasPrice", Value.fromBigInt(value));
   }
 
-  get autoPayBatchSize(): BigInt {
+  get autoPayBatchSize(): i32 {
     let value = this.get("autoPayBatchSize");
+    return value!.toI32();
+  }
+
+  set autoPayBatchSize(value: i32) {
+    this.set("autoPayBatchSize", Value.fromI32(value));
+  }
+
+  get minimumAutoship(): BigInt {
+    let value = this.get("minimumAutoship");
     return value!.toBigInt();
   }
 
-  set autoPayBatchSize(value: BigInt) {
-    this.set("autoPayBatchSize", Value.fromBigInt(value));
+  set minimumAutoship(value: BigInt) {
+    this.set("minimumAutoship", Value.fromBigInt(value));
   }
 }
 
@@ -955,6 +964,24 @@ export class Opportunity extends Entity {
 
   set status(value: string) {
     this.set("status", Value.fromString(value));
+  }
+
+  get createdAt(): i32 {
+    let value = this.get("createdAt");
+    return value!.toI32();
+  }
+
+  set createdAt(value: i32) {
+    this.set("createdAt", Value.fromI32(value));
+  }
+
+  get updatedAt(): i32 {
+    let value = this.get("updatedAt");
+    return value!.toI32();
+  }
+
+  set updatedAt(value: i32) {
+    this.set("updatedAt", Value.fromI32(value));
   }
 }
 
