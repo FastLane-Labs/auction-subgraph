@@ -216,6 +216,40 @@ export class Auction extends Entity {
   set minimumAutoship(value: BigInt) {
     this.set("minimumAutoship", Value.fromBigInt(value));
   }
+
+  get currentRound(): string | null {
+    let value = this.get("currentRound");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set currentRound(value: string | null) {
+    if (!value) {
+      this.unset("currentRound");
+    } else {
+      this.set("currentRound", Value.fromString(<string>value));
+    }
+  }
+
+  get globalStats(): string | null {
+    let value = this.get("globalStats");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set globalStats(value: string | null) {
+    if (!value) {
+      this.unset("globalStats");
+    } else {
+      this.set("globalStats", Value.fromString(<string>value));
+    }
+  }
 }
 
 export class Round extends Entity {
@@ -310,41 +344,40 @@ export class Round extends Entity {
     }
   }
 
-  get addedValidators(): Array<string> | null {
+  get addedValidators(): Array<string> {
     let value = this.get("addedValidators");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
+    return value!.toStringArray();
   }
 
-  set addedValidators(value: Array<string> | null) {
-    if (!value) {
-      this.unset("addedValidators");
-    } else {
-      this.set("addedValidators", Value.fromStringArray(<Array<string>>value));
-    }
+  set addedValidators(value: Array<string>) {
+    this.set("addedValidators", Value.fromStringArray(value));
   }
 
-  get addedOpportunities(): Array<string> | null {
+  get addedOpportunities(): Array<string> {
     let value = this.get("addedOpportunities");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toStringArray();
-    }
+    return value!.toStringArray();
   }
 
-  set addedOpportunities(value: Array<string> | null) {
-    if (!value) {
-      this.unset("addedOpportunities");
-    } else {
-      this.set(
-        "addedOpportunities",
-        Value.fromStringArray(<Array<string>>value)
-      );
-    }
+  set addedOpportunities(value: Array<string>) {
+    this.set("addedOpportunities", Value.fromStringArray(value));
+  }
+
+  get totalBidsCount(): BigInt {
+    let value = this.get("totalBidsCount");
+    return value!.toBigInt();
+  }
+
+  set totalBidsCount(value: BigInt) {
+    this.set("totalBidsCount", Value.fromBigInt(value));
+  }
+
+  get totalBidsSum(): BigInt {
+    let value = this.get("totalBidsSum");
+    return value!.toBigInt();
+  }
+
+  set totalBidsSum(value: BigInt) {
+    this.set("totalBidsSum", Value.fromBigInt(value));
   }
 
   get bids(): Array<string> | null {
@@ -459,20 +492,20 @@ export class Validator extends Entity {
     this.set("pendingBalanceAtlastBid", Value.fromBigInt(value));
   }
 
-  get lastWithdrawnAuctionRound(): BigInt | null {
+  get lastWithdrawnAuctionRound(): string | null {
     let value = this.get("lastWithdrawnAuctionRound");
     if (!value || value.kind == ValueKind.NULL) {
       return null;
     } else {
-      return value.toBigInt();
+      return value.toString();
     }
   }
 
-  set lastWithdrawnAuctionRound(value: BigInt | null) {
+  set lastWithdrawnAuctionRound(value: string | null) {
     if (!value) {
       this.unset("lastWithdrawnAuctionRound");
     } else {
-      this.set("lastWithdrawnAuctionRound", Value.fromBigInt(<BigInt>value));
+      this.set("lastWithdrawnAuctionRound", Value.fromString(<string>value));
     }
   }
 
@@ -493,13 +526,13 @@ export class Validator extends Entity {
     }
   }
 
-  get lastBidReceivedTimestamp(): BigInt {
+  get lastBidReceivedTimestamp(): i32 {
     let value = this.get("lastBidReceivedTimestamp");
-    return value!.toBigInt();
+    return value!.toI32();
   }
 
-  set lastBidReceivedTimestamp(value: BigInt) {
-    this.set("lastBidReceivedTimestamp", Value.fromBigInt(value));
+  set lastBidReceivedTimestamp(value: i32) {
+    this.set("lastBidReceivedTimestamp", Value.fromI32(value));
   }
 
   get outstandingBalance(): BigInt {
@@ -637,6 +670,24 @@ export class Pair extends Entity {
     } else {
       this.set("topBid", Value.fromString(<string>value));
     }
+  }
+
+  get totalBidsCount(): BigInt {
+    let value = this.get("totalBidsCount");
+    return value!.toBigInt();
+  }
+
+  set totalBidsCount(value: BigInt) {
+    this.set("totalBidsCount", Value.fromBigInt(value));
+  }
+
+  get totalBidsSum(): BigInt {
+    let value = this.get("totalBidsSum");
+    return value!.toBigInt();
+  }
+
+  set totalBidsSum(value: BigInt) {
+    this.set("totalBidsSum", Value.fromBigInt(value));
   }
 }
 

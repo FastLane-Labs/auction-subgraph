@@ -19,6 +19,8 @@ type Auction @entity {
   resolverMaxGasPrice: BigInt!
   autoPayBatchSize: Int!
   minimumAutoship: BigInt!
+  currentRound: Round @derivedFrom(field: "auction")
+  globalStats: GlobalStats
   # Consider updatedAt
 }
 
@@ -29,8 +31,10 @@ type Round @entity {
   startTimestamp: Int!
   endTimestamp: Int
   endBlock: BigInt
-  addedValidators: [Validator!]
-  addedOpportunities: [Opportunity!]
+  addedValidators: [Validator!]!
+  addedOpportunities: [Opportunity!]!
+  totalBidsCount: BigInt!
+  totalBidsSum: BigInt!
   bids: [Bid!] @derivedFrom(field: "round")
   createdAt: Int!
   updatedAt: Int!
@@ -50,9 +54,9 @@ type Validator @entity  {
   bidsReceived: BigInt!
   totalRedeemed: BigInt!
   pendingBalanceAtlastBid: BigInt!
-  lastWithdrawnAuctionRound: BigInt
+  lastWithdrawnAuctionRound: Round
   lastBidReceivedAuctionRound: Round
-  lastBidReceivedTimestamp: BigInt!
+  lastBidReceivedTimestamp: Int!
   outstandingBalance: BigInt!
   minAutoshipAmount: BigInt!
   validatorPayableAddress: Bytes!
@@ -66,6 +70,8 @@ type Pair @entity {
   validator: Validator
   opportunity: Opportunity
   topBid: Bid
+  totalBidsCount: BigInt!
+  totalBidsSum: BigInt!
 }
 
 type Bid @entity {

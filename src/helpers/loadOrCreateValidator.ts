@@ -2,6 +2,7 @@ import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts';
 import { ZERO, ADDRESS_ZERO, ZERO_INT } from './common';
 import { Validator } from "../../generated/schema";
 import { loadOrCreateStatus } from '../helpers/loadOrCreateStatus';
+import { loadOrCreateGlobalStats } from './loadOrCreateGlobalStats';
 
 export function loadOrCreateValidator(validatorAddress: Bytes): Validator {
     let validator = Validator.load(validatorAddress.toHexString());
@@ -12,9 +13,10 @@ export function loadOrCreateValidator(validatorAddress: Bytes): Validator {
         validator.totalRedeemed = ZERO;
         validator.bidsReceived = ZERO;
         validator.pendingBalanceAtlastBid = ZERO;
-        validator.lastWithdrawnAuction = ZERO;
-        validator.lastBidReceivedAuction = ZERO;
-        validator.lastBidReceivedTimestamp = ZERO;
+        validator.lastBidReceivedTimestamp = ZERO_INT;
+        // validator.lastWithdrawnAuctionRound = ZERO;
+        // validator.lastBidReceivedAuctionRound = ZERO;
+        // validator.lastBidReceivedAuctionRound = '';
         validator.outstandingBalance = ZERO;
         validator.minAutoshipAmount = ZERO;
         validator.validatorPayableAddress = ADDRESS_ZERO;
@@ -22,6 +24,10 @@ export function loadOrCreateValidator(validatorAddress: Bytes): Validator {
         validator.updatedAt = ZERO_INT;
         validator.status = loadOrCreateStatus(validatorAddress).id;
         validator.save();
+
+        const stats = loadOrCreateGlobalStats();
+        stats.totalValidatorsCount = stats.totalValidatorsCount.plus(BigInt.fromI32(1));
+        stats.save();
         //log.info('ValID {}',[validator.id]);
     }
     return validator;

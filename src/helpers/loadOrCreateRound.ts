@@ -9,8 +9,13 @@ export function loadOrCreateRound(roundNum: BigInt): Round {
         round.startBlock = ZERO;
         round.startTimestamp = ZERO_INT;
         //round.endTimestamp = 0;
+        round.totalBidsCount = ZERO;
+        round.totalBidsSum = ZERO;
+        round.addedOpportunities = [];
+        round.addedValidators = [];
         round.createdAt = ZERO_INT;
         round.updatedAt = ZERO_INT;
+        round.save();
     }
     return round;
 }

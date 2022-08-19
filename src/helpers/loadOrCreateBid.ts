@@ -11,6 +11,8 @@ export function loadOrCreateBid(targetBidStr: string): Bid {
         // bid.searcher = '';
         // bid.searcherContract = '';
         bid.timestamp = ZERO_INT;
+        bid.bidAmount = ZERO;
+        bid.save();
     }
     return bid;
 }

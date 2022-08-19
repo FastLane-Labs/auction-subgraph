@@ -10,9 +10,11 @@ export function loadOrCreateSearcher(targetSearcher: Bytes): Searcher {
         searcher.bidsAdded = ZERO;
         searcher.roundsWonCount = ZERO;
         searcher.lastRoundParticipated = ZERO;
+        searcher.roundsParticipated = ZERO;
         searcher.lastRoundWon = ZERO;
         searcher.createdAt = ZERO_INT;
         searcher.updatedAt = ZERO_INT;
+        searcher.save();
     }
     return searcher;
 }

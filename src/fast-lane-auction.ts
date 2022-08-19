@@ -44,6 +44,7 @@ import { loadOrCreateRound } from "./helpers/loadOrCreateRound";
 import { loadOrCreateBid } from "./helpers/loadOrCreateBid";
 import { loadOrCreatePair } from "./helpers/loadOrCreatePair";
 import { loadOrCreateSearcher } from './helpers/loadOrCreateSearcher';
+import { loadOrCreateGlobalStats } from "./helpers/loadOrCreateGlobalStats";
 
 
 export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): void {
@@ -59,6 +60,14 @@ export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): v
   validator.updatedAt = event.block.timestamp.toI32();
   validator.save();
   status.save();
+
+  const round = loadOrCreateRound(event.params.auction_number);
+  if (!round.addedValidators.includes(validator.id)) {
+    round.addedValidators.push(validator.id);
+    round.save();
+  }
+  
+
 }
 
 export function handleAuctionEnded(event: AuctionEnded): void {
@@ -79,6 +88,7 @@ export function handleAuctionStarted(event: AuctionStarted): void {
     
     const round = loadOrCreateRound(event.params.auction_number);
     round.auction = auction.id;
+    auction.currentRound = round.id;
 
     if (round.createdAt == ZERO_INT) {
       round.startBlock = event.block.number;
@@ -101,40 +111,63 @@ export function handleAutopayBatchSizeSet(event: AutopayBatchSizeSet): void {
 }
 
 export function handleBidAdded(event: BidAdded): void {
-  const bidId = `${event.params.auction_number}-${event.params.bidder}-${event.block.number}-${event.params.validator}-${event.params.opportunity}-${event.params.amount}`;
+  const bidId = `${event.params.auction_number}-${event.params.bidder.toHexString()}-${event.block.number}-${event.params.validator.toHexString()}-${event.params.opportunity.toHexString()}-${event.params.amount}`;
   const bid = loadOrCreateBid(bidId);
   const validator = loadOrCreateValidator(event.params.validator);
   const opportunity = loadOrCreateOpportunity(event.params.opportunity);
   const pair = loadOrCreatePair(`${event.params.validator}-${event.params.opportunity}`);
-  
+  const round = loadOrCreateRound(event.params.auction_number);
   pair.validator = validator.id;
   pair.opportunity = opportunity.id;
   
-  // Bid added can only be emitted if the bid is beated for that pair.
+  // Bid added can only be emitted if the bid is beaten for that pair.
+  let prevBidAmount = ZERO;
+  if (pair.topBid) {
+    const prevTopBid = loadOrCreateBid(pair.topBid!);
+    prevBidAmount = prevTopBid.bidAmount;
+  }
+  
   pair.topBid = bid.id;
   pair.save();
 
   bid.round = event.params.auction_number.toString();
 
+
   const searcher = loadOrCreateSearcher(event.params.bidder);
 
   if (searcher.lastRoundParticipated != event.params.auction_number) {
     searcher.lastRoundParticipated = event.params.auction_number;
+    searcher.roundsParticipated = searcher.roundsParticipated.plus(BigInt.fromI32(1));
   }
 
   if (searcher.createdAt == ZERO_INT) {
     searcher.createdAt = event.block.timestamp.toI32();
-    searcher.save();
   }
   searcher.updatedAt = event.block.timestamp.toI32();
   searcher.save();
 
   bid.searcher = searcher.id;
+  bid.timestamp = event.block.timestamp.toI32();
+  bid.block = event.block.number;
+
   bid.save();
 
   validator.bidsReceived = validator.bidsReceived.plus(BigInt.fromI32(1));
   validator.lastBidReceivedAuctionRound = event.params.auction_number.toString();
+  validator.lastBidReceivedTimestamp = event.block.timestamp.toI32();
+  validator.updatedAt = event.block.timestamp.toI32();
+
+
   validator.save();
+
+  const stats = loadOrCreateGlobalStats();
+  stats.totalBidsCount = stats.totalBidsCount.plus(BigInt.fromI32(1));
+  stats.totalBidsSum = stats.totalBidsSum.minus(prevBidAmount).plus(event.params.amount);
+  stats.save();
+
+  round.totalBidsCount = round.totalBidsCount.plus(BigInt.fromI32(1))
+  round.totalBidsSum = round.totalBidsSum.minus(prevBidAmount).plus(event.params.amount)
+  round.save();
   //const searcherContract = loadOrCreaterSearcherContract(event.params.) // Alter to emit both?
 }
 
@@ -195,6 +228,13 @@ export function handleOpportunityAddressEnabled(
   opportunity.updatedAt = event.block.timestamp.toI32();
   opportunity.save();
   status.save();
+
+  const round = loadOrCreateRound(event.params.auction_number);
+  if (!round.addedOpportunities.includes(opportunity.id)) {
+    round.addedOpportunities.push(opportunity.id);
+    round.save();
+  }
+  
 }
 
 export function handleOpsSet(event: OpsSet): void {
@@ -225,7 +265,6 @@ export function handleValidatorAddressDisabled(
   validator.updatedAt = event.block.timestamp.toI32();
   validator.save();
   status.save();
-
 }
 
 

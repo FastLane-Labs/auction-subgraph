@@ -6,6 +6,9 @@ export function loadOrCreatePair(targetPairStr: string): Pair {
     let pair = Pair.load(targetPairStr);
     if (!pair) {
         pair = new Pair(targetPairStr);
+        pair.totalBidsCount = ZERO;
+        pair.totalBidsSum = ZERO;
+        pair.save();
     }
     return pair;
 }

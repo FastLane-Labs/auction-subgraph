@@ -9,6 +9,7 @@ export function loadOrCreateStatus(targetAddress: Bytes): Status {
         status.address = Bytes.fromHexString(targetAddress.toHexString());
         status.activeAtAuction = ZERO;
         status.inactiveAtAuction = ZERO;
+        status.save();
     }
     return status;
 }
