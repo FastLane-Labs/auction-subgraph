@@ -26,8 +26,6 @@ import {
   WithdrawStuckNativeToken
 } from "../generated/FastLaneAuction/FastLaneAuction"
 
-import { loadOrCreateValidator } from './helpers/loadOrCreateValidator';
-import { loadOrCreateStatus } from './helpers/loadOrCreateStatus';
 
 import {
   ZERO,
@@ -37,9 +35,16 @@ import {
   ADDRESS_ZERO,
   ZERO_INT
 } from './helpers/common';
+
+import { loadOrCreateValidator } from './helpers/loadOrCreateValidator';
+import { loadOrCreateStatus } from './helpers/loadOrCreateStatus';
 import { loadOrCreateOpportunity } from "./helpers/loadOrCreateOpportunity";
 import { loadOrCreateAuction } from "./helpers/loadOrCreateAuction";
 import { loadOrCreateRound } from "./helpers/loadOrCreateRound";
+import { loadOrCreateBid } from "./helpers/loadOrCreateBid";
+import { loadOrCreatePair } from "./helpers/loadOrCreatePair";
+import { loadOrCreateSearcher } from './helpers/loadOrCreateSearcher';
+
 
 export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): void {
   const validator = loadOrCreateValidator(event.params.validator);
@@ -95,7 +100,43 @@ export function handleAutopayBatchSizeSet(event: AutopayBatchSizeSet): void {
   auction.save();
 }
 
-export function handleBidAdded(event: BidAdded): void {}
+export function handleBidAdded(event: BidAdded): void {
+  const bidId = `${event.params.auction_number}-${event.params.bidder}-${event.block.number}-${event.params.validator}-${event.params.opportunity}-${event.params.amount}`;
+  const bid = loadOrCreateBid(bidId);
+  const validator = loadOrCreateValidator(event.params.validator);
+  const opportunity = loadOrCreateOpportunity(event.params.opportunity);
+  const pair = loadOrCreatePair(`${event.params.validator}-${event.params.opportunity}`);
+  
+  pair.validator = validator.id;
+  pair.opportunity = opportunity.id;
+  
+  // Bid added can only be emitted if the bid is beated for that pair.
+  pair.topBid = bid.id;
+  pair.save();
+
+  bid.round = event.params.auction_number.toString();
+
+  const searcher = loadOrCreateSearcher(event.params.bidder);
+
+  if (searcher.lastRoundParticipated != event.params.auction_number) {
+    searcher.lastRoundParticipated = event.params.auction_number;
+  }
+
+  if (searcher.createdAt == ZERO_INT) {
+    searcher.createdAt = event.block.timestamp.toI32();
+    searcher.save();
+  }
+  searcher.updatedAt = event.block.timestamp.toI32();
+  searcher.save();
+
+  bid.searcher = searcher.id;
+  bid.save();
+
+  validator.bidsReceived = validator.bidsReceived.plus(BigInt.fromI32(1));
+  validator.lastBidReceivedAuctionRound = event.params.auction_number.toString();
+  validator.save();
+  //const searcherContract = loadOrCreaterSearcherContract(event.params.) // Alter to emit both?
+}
 
 export function handleBidTokenSet(event: BidTokenSet): void {
   const auction = loadOrCreateAuction();

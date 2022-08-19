@@ -50,8 +50,8 @@ type Validator @entity  {
   bidsReceived: BigInt!
   totalRedeemed: BigInt!
   pendingBalanceAtlastBid: BigInt!
-  lastWithdrawnAuction: BigInt!
-  lastBidReceivedAuction: BigInt!
+  lastWithdrawnAuctionRound: BigInt
+  lastBidReceivedAuctionRound: Round
   lastBidReceivedTimestamp: BigInt!
   outstandingBalance: BigInt!
   minAutoshipAmount: BigInt!
@@ -71,14 +71,14 @@ type Pair @entity {
 type Bid @entity {
   id: ID!
   round: Round
-  validator: Validator!
-  opportunity: Opportunity!
-  searcher: Searcher!
-  searcherContract: SearcherContract!
+  validator: Validator
+  opportunity: Opportunity
+  searcher: Searcher
+  searcherContract: SearcherContract
   bidAmount: BigInt!
   timestamp: Int!
   pair: Pair
-  block: BigInt!
+  block: BigInt
 }
 
 type SearcherContract @entity {

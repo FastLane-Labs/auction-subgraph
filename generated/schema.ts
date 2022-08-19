@@ -459,22 +459,38 @@ export class Validator extends Entity {
     this.set("pendingBalanceAtlastBid", Value.fromBigInt(value));
   }
 
-  get lastWithdrawnAuction(): BigInt {
-    let value = this.get("lastWithdrawnAuction");
-    return value!.toBigInt();
+  get lastWithdrawnAuctionRound(): BigInt | null {
+    let value = this.get("lastWithdrawnAuctionRound");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set lastWithdrawnAuction(value: BigInt) {
-    this.set("lastWithdrawnAuction", Value.fromBigInt(value));
+  set lastWithdrawnAuctionRound(value: BigInt | null) {
+    if (!value) {
+      this.unset("lastWithdrawnAuctionRound");
+    } else {
+      this.set("lastWithdrawnAuctionRound", Value.fromBigInt(<BigInt>value));
+    }
   }
 
-  get lastBidReceivedAuction(): BigInt {
-    let value = this.get("lastBidReceivedAuction");
-    return value!.toBigInt();
+  get lastBidReceivedAuctionRound(): string | null {
+    let value = this.get("lastBidReceivedAuctionRound");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set lastBidReceivedAuction(value: BigInt) {
-    this.set("lastBidReceivedAuction", Value.fromBigInt(value));
+  set lastBidReceivedAuctionRound(value: string | null) {
+    if (!value) {
+      this.unset("lastBidReceivedAuctionRound");
+    } else {
+      this.set("lastBidReceivedAuctionRound", Value.fromString(<string>value));
+    }
   }
 
   get lastBidReceivedTimestamp(): BigInt {
@@ -672,40 +688,72 @@ export class Bid extends Entity {
     }
   }
 
-  get validator(): string {
+  get validator(): string | null {
     let value = this.get("validator");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set validator(value: string) {
-    this.set("validator", Value.fromString(value));
+  set validator(value: string | null) {
+    if (!value) {
+      this.unset("validator");
+    } else {
+      this.set("validator", Value.fromString(<string>value));
+    }
   }
 
-  get opportunity(): string {
+  get opportunity(): string | null {
     let value = this.get("opportunity");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set opportunity(value: string) {
-    this.set("opportunity", Value.fromString(value));
+  set opportunity(value: string | null) {
+    if (!value) {
+      this.unset("opportunity");
+    } else {
+      this.set("opportunity", Value.fromString(<string>value));
+    }
   }
 
-  get searcher(): string {
+  get searcher(): string | null {
     let value = this.get("searcher");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set searcher(value: string) {
-    this.set("searcher", Value.fromString(value));
+  set searcher(value: string | null) {
+    if (!value) {
+      this.unset("searcher");
+    } else {
+      this.set("searcher", Value.fromString(<string>value));
+    }
   }
 
-  get searcherContract(): string {
+  get searcherContract(): string | null {
     let value = this.get("searcherContract");
-    return value!.toString();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
   }
 
-  set searcherContract(value: string) {
-    this.set("searcherContract", Value.fromString(value));
+  set searcherContract(value: string | null) {
+    if (!value) {
+      this.unset("searcherContract");
+    } else {
+      this.set("searcherContract", Value.fromString(<string>value));
+    }
   }
 
   get bidAmount(): BigInt {
@@ -743,13 +791,21 @@ export class Bid extends Entity {
     }
   }
 
-  get block(): BigInt {
+  get block(): BigInt | null {
     let value = this.get("block");
-    return value!.toBigInt();
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
   }
 
-  set block(value: BigInt) {
-    this.set("block", Value.fromBigInt(value));
+  set block(value: BigInt | null) {
+    if (!value) {
+      this.unset("block");
+    } else {
+      this.set("block", Value.fromBigInt(<BigInt>value));
+    }
   }
 }
 
