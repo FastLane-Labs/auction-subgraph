@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import { BigInt, log } from "@graphprotocol/graph-ts"
 import { logStore } from 'matchstick-as/assembly/store'
 
 import {
@@ -61,9 +61,12 @@ export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): v
   validator.save();
   status.save();
 
-  const round = loadOrCreateRound(event.params.auction_number);
-  if (!round.addedValidators.includes(validator.id)) {
-    round.addedValidators.push(validator.id);
+  const round = loadOrCreateRound(event.params.auction_number); // Does   round.addedOpportunities = new Array();
+  let addedValidators = round.addedValidators;
+
+  if (!addedValidators.includes(validator.id)) {
+    addedValidators.push(validator.id);
+    round.addedValidators = addedValidators; 
     round.save();
   }
   
@@ -226,14 +229,21 @@ export function handleOpportunityAddressEnabled(
     opportunity.save();
   }
   opportunity.updatedAt = event.block.timestamp.toI32();
+
   opportunity.save();
   status.save();
 
-  const round = loadOrCreateRound(event.params.auction_number);
-  if (!round.addedOpportunities.includes(opportunity.id)) {
-    round.addedOpportunities.push(opportunity.id);
+  //log.info("OppId: {}", [opportunity.id]); // 💬 OppId: 0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff
+
+  const round = loadOrCreateRound(event.params.auction_number); // Does   round.addedOpportunities = new Array();
+  let addedOpportunities = round.addedOpportunities;
+
+  if (!addedOpportunities.includes(opportunity.id)) {
+    addedOpportunities.push(opportunity.id);
+    round.addedOpportunities = addedOpportunities; 
     round.save();
   }
+  
   
 }
 

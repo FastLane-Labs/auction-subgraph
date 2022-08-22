@@ -15,7 +15,7 @@ export function loadOrCreateOpportunity(opportunityAddress: Bytes): Opportunity 
         opportunity.save();
 
         const stats = loadOrCreateGlobalStats();
-        stats.totalValidatorsCount = stats.totalOpportunitiesCount.plus(BigInt.fromI32(1));
+        stats.totalOpportunitiesCount = stats.totalOpportunitiesCount.plus(BigInt.fromI32(1));
         stats.save();
     }
     return opportunity;

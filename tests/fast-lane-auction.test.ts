@@ -5,28 +5,42 @@ import {
   clearStore,
   beforeAll,
   afterAll,
-  logStore
-} from "matchstick-as/assembly/index"
-import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts"
-import { Opportunity, Validator } from "../generated/schema"
-import { AuctionEnded, AuctionStarted } from "../generated/FastLaneAuction/FastLaneAuction"
-import { handleAuctionEnded, handleAuctionStarted, handleOpportunityAddressEnabled, handleValidatorAddressEnabled } from "../src/fast-lane-auction"
-import { createOpportunityAddressEnabledEvent, createValidatorAddressEnabledEvent, createAuctionStartedEvent, createAuctionEndedEvent } from "./fast-lane-auction-utils"
+  logStore,
+} from "matchstick-as/assembly/index";
+import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
+import { Opportunity, Validator } from "../generated/schema";
+import {
+  AuctionEnded,
+  AuctionStarted,
+} from "../generated/FastLaneAuction/FastLaneAuction";
+import {
+  handleAuctionEnded,
+  handleAuctionStarted,
+  handleOpportunityAddressEnabled,
+  handleValidatorAddressEnabled,
+} from "../src/fast-lane-auction";
+import {
+  createOpportunityAddressEnabledEvent,
+  createValidatorAddressEnabledEvent,
+  createAuctionStartedEvent,
+  createAuctionEndedEvent,
+} from "./fast-lane-auction-utils";
 
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
 
 describe("Opportunities and Validators Enable Disable", () => {
-  beforeAll(() => {
-
-  });
+  beforeAll(() => {});
   afterAll(() => {
     clearStore();
   });
 
-  describe("Enable Validator",() => {
+  describe("Enable Validator", () => {
     // Store will be lowercase
-    let newEnableValidatorEvent = createValidatorAddressEnabledEvent(Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),BigInt.zero());
+    let newEnableValidatorEvent = createValidatorAddressEnabledEvent(
+      Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
+      BigInt.zero()
+    );
     handleValidatorAddressEnabled(newEnableValidatorEvent);
     assert.entityCount("Validator", 1);
     assert.entityCount("Status", 1);
@@ -44,9 +58,12 @@ describe("Opportunities and Validators Enable Disable", () => {
     );
   });
 
-  describe("Enable Opportunity",() => {
+  describe("Enable Opportunity", () => {
     // Store will be lowercase
-    let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),BigInt.zero());
+    let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(
+      Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
+      BigInt.zero()
+    );
     handleOpportunityAddressEnabled(newEnableOpportunityEvent);
     assert.entityCount("Opportunity", 1);
     assert.entityCount("Status", 1);
@@ -64,28 +81,46 @@ describe("Opportunities and Validators Enable Disable", () => {
     );
   });
 
-
-  describe("New Round",() => {
+  describe("New Round", () => {
     // Store will be lowercase
     let newAuctionStartedEvent = createAuctionStartedEvent(BigInt.fromI32(1));
     handleAuctionStarted(newAuctionStartedEvent);
     let newAuctionEndedEvent = createAuctionEndedEvent(BigInt.fromI32(1));
     handleAuctionEnded(newAuctionEndedEvent);
-    logStore();
+    //logStore();
     assert.entityCount("Auction", 1);
     assert.entityCount("Round", 1);
-    assert.fieldEquals(
-      "Round",
-      "1",
-      "startBlock",
-      "1"
+    assert.fieldEquals("Round", "1", "startBlock", "1");
+    assert.fieldEquals("Round", "1", "endBlock", "1");
+
+  });
+
+  describe("addedValidators & addedOpportunity", () => {
+    // Store will be lowercase
+    let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(
+      Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
+      BigInt.zero()
     );
-    assert.fieldEquals(
-      "Round",
-      "1",
-      "endBlock",
-      "1"
+    handleOpportunityAddressEnabled(newEnableOpportunityEvent);
+    
+    let newEnableValidatorEvent = createValidatorAddressEnabledEvent(
+      Address.fromString("0xb5777777aCEd8fFDD4De3c43696c57F7D7A678ff"),
+      BigInt.zero()
     );
+    handleValidatorAddressEnabled(newEnableValidatorEvent);
+    
+    // let newAuctionStartedEvent = createAuctionStartedEvent(BigInt.fromI32(1));
+    // handleAuctionStarted(newAuctionStartedEvent);
+    // let newAuctionEndedEvent = createAuctionEndedEvent(BigInt.fromI32(1));
+    // handleAuctionEnded(newAuctionEndedEvent);
+    logStore();
+    // assert.entityCount("Auction", 1);
+    assert.entityCount("Round", 1);
+    assert.entityCount("Validator", 1);
+    assert.entityCount("Opportunity", 1);
+    assert.fieldEquals("Round", "0", "startBlock", "0");
+    assert.fieldEquals("Round", "0", "addedOpportunities", "[0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff]");
+    
   });
 
 
@@ -107,7 +142,6 @@ describe("Opportunities and Validators Enable Disable", () => {
   //   );
   // });
 });
-
 
 // describe("Describe entity assertions", () => {
 //   beforeAll(() => {
