@@ -83,15 +83,16 @@ export function handleAuctionEnded(event: AuctionEnded): void {
 
 export function handleAuctionStarted(event: AuctionStarted): void {
     const auction = loadOrCreateAuction();
+    
+    const round = loadOrCreateRound(event.params.auction_number);
+    round.auction = auction.id;
+    auction.currentRound = round.id;
 
     if (auction.address == ADDRESS_ZERO) {
       auction.address = event.address;
       auction.save();
     }
     
-    const round = loadOrCreateRound(event.params.auction_number);
-    round.auction = auction.id;
-    auction.currentRound = round.id;
 
     if (round.createdAt == ZERO_INT) {
       round.startBlock = event.block.number;

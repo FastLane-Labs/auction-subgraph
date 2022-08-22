@@ -19,7 +19,7 @@ type Auction @entity {
   resolverMaxGasPrice: BigInt!
   autoPayBatchSize: Int!
   minimumAutoship: BigInt!
-  currentRound: Round @derivedFrom(field: "auction")
+  currentRound: Round
   globalStats: GlobalStats
   # Consider updatedAt
 }
