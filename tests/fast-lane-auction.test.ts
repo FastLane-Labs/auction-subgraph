@@ -16,6 +16,7 @@ import {
 import {
   handleAuctionEnded,
   handleAuctionStarted,
+  handleBidAdded,
   handleOpportunityAddressEnabled,
   handleValidatorAddressEnabled,
 } from "../src/fast-lane-auction";
@@ -24,6 +25,7 @@ import {
   createValidatorAddressEnabledEvent,
   createAuctionStartedEvent,
   createAuctionEndedEvent,
+  createBidAddedEvent,
 } from "./fast-lane-auction-utils";
 
 // Tests structure (matchstick-as >=0.5.0)
@@ -113,7 +115,6 @@ describe("Opportunities and Validators Enable Disable", () => {
     // handleAuctionStarted(newAuctionStartedEvent);
     // let newAuctionEndedEvent = createAuctionEndedEvent(BigInt.fromI32(1));
     // handleAuctionEnded(newAuctionEndedEvent);
-    logStore();
     // assert.entityCount("Auction", 1);
     assert.entityCount("Round", 1);
     assert.entityCount("Validator", 1);
@@ -124,23 +125,30 @@ describe("Opportunities and Validators Enable Disable", () => {
   });
 
 
-  // describe("Enable Opp",() => {
-  //   let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(Address.fromString("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),BigInt.zero());
-  //   handleOpportunityAddressEnabled(newEnableOpportunityEvent);
-  //   assert.entityCount("Opportunity", 1);
-  //   assert.fieldEquals(
-  //     "Opportunity",
-  //     "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
-  //     "bidsReceived",
-  //     "0"
-  //   );
-  //   assert.fieldEquals(
-  //     "Opportunity",
-  //     "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
-  //     "status",
-  //     "0"
-  //   );
-  // });
+  describe("Bid submitted",() => {
+    let opportunity = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff";
+    let newEnableOpportunityEvent = createOpportunityAddressEnabledEvent(
+      Address.fromString(opportunity),
+      BigInt.zero()
+    );
+    handleOpportunityAddressEnabled(newEnableOpportunityEvent);
+    
+    let validator = "0xb5777777aCEd8fFDD4De3c43696c57F7D7A678ff";
+    let newEnableValidatorEvent = createValidatorAddressEnabledEvent(
+      Address.fromString(validator),
+      BigInt.zero()
+    );
+    handleValidatorAddressEnabled(newEnableValidatorEvent);
+    let newAuctionStartedEvent = createAuctionStartedEvent(BigInt.fromI32(1));
+    handleAuctionStarted(newAuctionStartedEvent);
+    let newAuctionEndedEvent = createAuctionEndedEvent(BigInt.fromI32(1));
+    handleAuctionEnded(newAuctionEndedEvent);
+    // New Opp, Valid, Auction start
+    let bidder = "0x325357c3c037ff9ad2fc68d512c835d80d5b581a";
+    let newBidEvent = createBidAddedEvent(Address.fromString(bidder),Address.fromString(validator),Address.fromString(opportunity),BigInt.fromI32(9999),BigInt.fromI32(1));
+    handleBidAdded(newBidEvent);
+    logStore();
+  });
 });
 
 // describe("Describe entity assertions", () => {

@@ -92,7 +92,7 @@ export function handleAuctionStarted(event: AuctionStarted): void {
       auction.address = event.address;
       auction.save();
     }
-    
+
 
     if (round.createdAt == ZERO_INT) {
       round.startBlock = event.block.number;
@@ -119,11 +119,15 @@ export function handleBidAdded(event: BidAdded): void {
   const bid = loadOrCreateBid(bidId);
   const validator = loadOrCreateValidator(event.params.validator);
   const opportunity = loadOrCreateOpportunity(event.params.opportunity);
-  const pair = loadOrCreatePair(`${event.params.validator}-${event.params.opportunity}`);
+  const pair = loadOrCreatePair(`${event.params.validator.toHexString()}-${event.params.opportunity.toHexString()}`);
   const round = loadOrCreateRound(event.params.auction_number);
+
   pair.validator = validator.id;
   pair.opportunity = opportunity.id;
   
+  // log.info("OppId: {}", [opportunity.id]); // 💬 OppId: 0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff
+  // log.info("ValiId: {}", [validator.id]);  // 💬 ValiId: 0xb5777777aced8ffdd4de3c43696c57f7d7a678ff
+
   // Bid added can only be emitted if the bid is beaten for that pair.
   let prevBidAmount = ZERO;
   if (pair.topBid) {
@@ -148,8 +152,13 @@ export function handleBidAdded(event: BidAdded): void {
     searcher.createdAt = event.block.timestamp.toI32();
   }
   searcher.updatedAt = event.block.timestamp.toI32();
+  searcher.bidsAdded = searcher.bidsAdded.plus(BigInt.fromI32(1));
   searcher.save();
 
+  bid.bidAmount = event.params.amount;
+  bid.pair = pair.id;
+  bid.validator = validator.id;
+  bid.opportunity = opportunity.id;
   bid.searcher = searcher.id;
   bid.timestamp = event.block.timestamp.toI32();
   bid.block = event.block.number;
