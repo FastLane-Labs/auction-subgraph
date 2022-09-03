@@ -1,6 +1,6 @@
 import { BigInt, log } from "@graphprotocol/graph-ts"
 import { logStore } from 'matchstick-as/assembly/store'
-
+import { uuid } from 'uuidv4';
 import {
   FastLaneAuction,
   AuctionEnded,
@@ -45,6 +45,7 @@ import { loadOrCreateBid } from "./helpers/loadOrCreateBid";
 import { loadOrCreatePair } from "./helpers/loadOrCreatePair";
 import { loadOrCreateSearcher } from './helpers/loadOrCreateSearcher';
 import { loadOrCreateGlobalStats } from "./helpers/loadOrCreateGlobalStats";
+import { loadOrCreateWithdrawal } from "./helpers/loadOrCreateWithdrawal";
 
 
 export function handleValidatorAddressEnabled(event: ValidatorAddressEnabled): void {
@@ -299,7 +300,30 @@ export function handleValidatorPreferencesSet(
 
 export function handleValidatorWithdrawnBalance(
   event: ValidatorWithdrawnBalance
-): void {}
+): void {
+  const validator = loadOrCreateValidator(event.params.validator);
+
+  const round = loadOrCreateRound(event.params.auction_number);
+
+  const withdrawal = loadOrCreateWithdrawal(`${event.params.auction_number.toHexString()}-${event.params.validator.toHexString()}-${event.params.caller.toHexString()}-${uuid()}`)
+  withdrawal.validator = validator.id;
+  withdrawal.caller = event.params.caller;
+  withdrawal.round = round.id;
+  withdrawal.timestamp = event.block.timestamp.toI32();
+  withdrawal.block = event.block.number;
+
+  withdrawal.save();
+  
+  validator.totalRedeemed = validator.totalRedeemed.plus(event.params.amount);
+
+  validator.lastWithdrawnAuctionRound = round.id;
+  validator.save();
+
+  const stats = loadOrCreateGlobalStats();
+  stats.totalValidatorsPaid = stats.totalValidatorsPaid.plus(event.params.amount);
+  stats.save();
+
+}
 
 export function handleWithdrawStuckERC20(event: WithdrawStuckERC20): void {}
 

@@ -691,6 +691,115 @@ export class Pair extends Entity {
   }
 }
 
+export class Withdrawal extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Withdrawal entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type Withdrawal must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("Withdrawal", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Withdrawal | null {
+    return changetype<Withdrawal | null>(store.get("Withdrawal", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get validator(): string | null {
+    let value = this.get("validator");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set validator(value: string | null) {
+    if (!value) {
+      this.unset("validator");
+    } else {
+      this.set("validator", Value.fromString(<string>value));
+    }
+  }
+
+  get caller(): Bytes | null {
+    let value = this.get("caller");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set caller(value: Bytes | null) {
+    if (!value) {
+      this.unset("caller");
+    } else {
+      this.set("caller", Value.fromBytes(<Bytes>value));
+    }
+  }
+
+  get round(): string | null {
+    let value = this.get("round");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set round(value: string | null) {
+    if (!value) {
+      this.unset("round");
+    } else {
+      this.set("round", Value.fromString(<string>value));
+    }
+  }
+
+  get timestamp(): i32 {
+    let value = this.get("timestamp");
+    return value!.toI32();
+  }
+
+  set timestamp(value: i32) {
+    this.set("timestamp", Value.fromI32(value));
+  }
+
+  get block(): BigInt | null {
+    let value = this.get("block");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set block(value: BigInt | null) {
+    if (!value) {
+      this.unset("block");
+    } else {
+      this.set("block", Value.fromBigInt(<BigInt>value));
+    }
+  }
+}
+
 export class Bid extends Entity {
   constructor(id: string) {
     super();

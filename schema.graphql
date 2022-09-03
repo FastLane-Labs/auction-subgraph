@@ -74,6 +74,15 @@ type Pair @entity {
   totalBidsSum: BigInt!
 }
 
+type Withdrawal @entity {
+  id: ID!
+  validator: Validator
+  caller: Bytes
+  round: Round
+  timestamp: Int
+  block: BigInt
+}
+
 type Bid @entity {
   id: ID!
   round: Round
